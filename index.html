@@ -1349,34 +1349,38 @@
           font-size: 13px;
         }
 
-        /* 手機框：縮小黑色外框環與陰影，寬度跟隨 viewport（上限 390px） */
+        /* 手機框：縮小成迷你 mockup — 上限 300px，左右留白讓使用者一眼
+           辨識這是「手機中的手機預覽」而不是全螢幕 App */
         .grid-phones-2 {
-          grid-template-columns: minmax(0, min(100%, 390px));
-          gap: 28px;
+          grid-template-columns: minmax(0, 300px);
+          gap: 24px;
         }
         .phone {
           width: 100%;
-          max-width: 390px;
-          border-radius: 32px;
-          padding: 34px 0 18px;
+          max-width: 300px;
+          border-radius: 26px;
+          padding: 26px 0 14px;
           box-shadow:
-            0 12px 32px rgba(45, 42, 34, 0.14),
-            0 0 0 4px #1f1d17;
+            0 10px 24px rgba(45, 42, 34, 0.14),
+            0 0 0 3px #1f1d17;
         }
         .phone::before {
-          top: 12px;
-          width: 88px;
-          height: 22px;
-          border-radius: 11px;
+          top: 9px;
+          width: 72px;
+          height: 18px;
+          border-radius: 9px;
         }
         .phone.edge-to-edge {
           padding: 0;
         }
+        .phone-caption {
+          margin-top: 14px;
+        }
         .phone-caption .title {
-          font-size: 15px;
+          font-size: 14px;
         }
         .phone-caption .note-mini {
-          font-size: 12px;
+          font-size: 11px;
         }
       }
     </style>
