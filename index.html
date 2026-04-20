@@ -1,0 +1,3550 @@
+<!doctype html>
+<html lang="zh-TW">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LinkSentry AI — Final Design Mockups</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700;900&family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* ==========================================================================
+   LinkSentry AI — Final Design Mockups (based on v6 approved design)
+   Soft Paper Safety design language. No iteration deltas.
+   8 mockups: Home · Analyzing · Result (Danger/Warning/Safe) · History List · History Detail · Account
+   ========================================================================== */
+      :root {
+        --canvas: #f4efe4;
+        --surface: #fbf8f0;
+        --surface-raised: #ffffff;
+
+        --sage-50: #eef3eb;
+        --sage-100: #dbe6d1;
+        --sage-200: #b8cfaa;
+        --sage-500: #7ca57a;
+        --sage-700: #4f7d54;
+        --sage-900: #2d4a30;
+
+        --peach-bg: #f5dfce;
+        --peach: #c88860;
+        --rose-bg: #f0d6d6;
+        --rose: #b56b6b;
+        --sky-bg: #d9e6ee;
+        --sky: #6a92ae;
+        --amber-bg: #f3e2c6;
+        --amber: #b08248;
+
+        --danger: #c4685f;
+        --danger-deep: #9b4e46;
+        --danger-bg: #f0d6d0;
+        --warning: var(--amber);
+        --warning-bg: var(--amber-bg);
+        --success: var(--sage-500);
+        --success-bg: var(--sage-50);
+
+        --score-danger: #e63946;
+        --score-warning: #f29035;
+        --score-safe: #2e9e5f;
+
+        --text-primary: #2d2a22;
+        --text-secondary: #6b6558;
+        --text-tertiary: #9a9487;
+
+        --border-soft: rgba(74, 64, 48, 0.08);
+        --border-card: rgba(74, 64, 48, 0.06);
+
+        --r-xs: 8px;
+        --r-sm: 12px;
+        --r-md: 18px;
+        --r-lg: 24px;
+        --r-xl: 32px;
+        --r-pill: 9999px;
+
+        --shadow-sm:
+          0 1px 2px rgba(74, 64, 48, 0.04), 0 0 0 1px var(--border-card);
+        --shadow-md:
+          0 2px 6px rgba(74, 64, 48, 0.06), 0 0 0 1px var(--border-card);
+        --shadow-lg:
+          0 6px 16px rgba(74, 64, 48, 0.08), 0 0 0 1px var(--border-card);
+        --shadow-pill:
+          0 2px 6px rgba(74, 64, 48, 0.08), 0 1px 2px rgba(74, 64, 48, 0.04);
+
+        --font-sans:
+          "Noto Sans TC", "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+        --font-mono: "Inter", ui-monospace, SFMono-Regular, monospace;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html,
+      body {
+        font-family: var(--font-sans);
+        background: var(--canvas);
+        color: var(--text-primary);
+        font-size: 15px;
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+      }
+      body {
+        padding: 48px 24px;
+      }
+      .doc {
+        max-width: 1280px;
+        margin: 0 auto;
+      }
+
+      .doc h1 {
+        font-size: 36px;
+        font-weight: 900;
+        letter-spacing: -0.03em;
+        margin-bottom: 8px;
+      }
+      .doc h2 {
+        font-size: 22px;
+        font-weight: 700;
+        margin: 56px 0 20px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--border-soft);
+        letter-spacing: -0.01em;
+      }
+      .lede {
+        font-size: 17px;
+        color: var(--text-secondary);
+        max-width: 720px;
+      }
+      .meta {
+        font-size: 11px;
+        color: var(--text-tertiary);
+        font-family: var(--font-mono);
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      .toc {
+        background: var(--surface-raised);
+        border-radius: var(--r-md);
+        padding: 18px 22px;
+        box-shadow: var(--shadow-sm);
+        margin-top: 20px;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 6px 24px;
+        font-size: 14px;
+      }
+      .toc a {
+        color: var(--sage-700);
+        text-decoration: none;
+        font-weight: 600;
+      }
+      .toc a::before {
+        content: "→ ";
+        color: var(--sage-500);
+      }
+
+      .grid-phones-2 {
+        display: grid;
+        grid-template-columns: repeat(2, 390px);
+        gap: 48px;
+        justify-content: start;
+        margin-top: 24px;
+      }
+      .grid-phones-2 + .grid-phones-2 {
+        margin-top: 56px;
+      }
+
+      .phone {
+        width: 390px;
+        background: var(--canvas);
+        border-radius: 44px;
+        padding: 44px 0 24px;
+        box-shadow:
+          0 20px 60px rgba(45, 42, 34, 0.16),
+          0 0 0 10px #1f1d17;
+        position: relative;
+        overflow: hidden;
+      }
+      .phone.edge-to-edge {
+        padding: 0;
+      }
+
+      .phone::before {
+        content: "";
+        position: absolute;
+        top: 16px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 104px;
+        height: 28px;
+        background: #1f1d17;
+        border-radius: 14px;
+        z-index: 20;
+      }
+      .phone-inner {
+        padding: 0 16px;
+      }
+      .phone-caption {
+        text-align: center;
+        margin-top: 20px;
+      }
+      .phone-caption .title {
+        font-weight: 700;
+        font-size: 16px;
+        color: var(--sage-900);
+      }
+      .phone-caption .note-mini {
+        font-size: 13px;
+        color: var(--text-tertiary);
+        margin-top: 4px;
+        padding: 0;
+      }
+
+      .screen-gap {
+        height: 14px;
+      }
+      .screen-gap-sm {
+        height: 8px;
+      }
+      .screen-gap-lg {
+        height: 20px;
+      }
+
+      /* TOPBAR — 永遠固定於頂部，內容於下方捲動 */
+      .ls-topbar-flat {
+        position: sticky;
+        top: 0;
+        z-index: 5;
+        background: var(--canvas);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 6px 4px;
+      }
+      .ls-topbar-flat .app-icon {
+        width: 44px;
+        height: 44px;
+        background: var(--sage-100);
+        border-radius: var(--r-sm);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--sage-700);
+        flex-shrink: 0;
+      }
+      .ls-topbar-flat .app-meta {
+        flex: 1;
+        min-width: 0;
+      }
+      .ls-topbar-flat .app-kicker {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        color: var(--sage-700);
+        margin-bottom: 1px;
+        text-transform: uppercase;
+      }
+      .ls-topbar-flat .app-title {
+        font-size: 19px;
+        font-weight: 900;
+        letter-spacing: -0.01em;
+        color: var(--text-primary);
+      }
+      .ls-topbar-flat .action-btn {
+        width: 40px;
+        height: 40px;
+        background: transparent;
+        border: 1px solid var(--border-soft);
+        border-radius: var(--r-pill);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--sage-700);
+        cursor: pointer;
+      }
+
+      /* HOME HERO */
+      .ls-hero {
+        background: var(--surface-raised);
+        border-radius: var(--r-lg);
+        padding: 20px;
+        box-shadow: var(--shadow-md);
+      }
+      .ls-hero .kicker {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        color: var(--sage-700);
+        margin-bottom: 8px;
+        text-transform: uppercase;
+      }
+      .ls-hero .headline {
+        font-size: 24px;
+        font-weight: 900;
+        color: var(--text-primary);
+        letter-spacing: -0.01em;
+        line-height: 1.3;
+      }
+      .ls-hero .desc {
+        font-size: 14px;
+        color: var(--text-secondary);
+        margin-top: 4px;
+      }
+      .ls-hero .stat-row {
+        display: flex;
+        gap: 12px;
+        margin-top: 14px;
+      }
+      .ls-hero .stat-chip {
+        flex: 1;
+        background: var(--sage-50);
+        border-radius: var(--r-md);
+        padding: 12px 14px;
+      }
+      .ls-hero .stat-chip.peach {
+        background: var(--peach-bg);
+      }
+      .ls-hero .stat-chip .num {
+        font-size: 24px;
+        font-weight: 900;
+        color: var(--sage-900);
+        letter-spacing: -0.02em;
+      }
+      .ls-hero .stat-chip.peach .num {
+        color: var(--peach);
+      }
+      .ls-hero .stat-chip .l {
+        font-size: 12px;
+        color: var(--text-secondary);
+        font-weight: 600;
+      }
+
+      .ls-cta {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        width: 100%;
+        padding: 18px 20px;
+        background: var(--sage-500);
+        color: white;
+        border: none;
+        border-radius: var(--r-lg);
+        font-family: inherit;
+        font-size: 17px;
+        font-weight: 700;
+        box-shadow: 0 2px 8px rgba(79, 125, 84, 0.18);
+        cursor: pointer;
+        letter-spacing: 0.01em;
+      }
+
+      .ls-dual-entry {
+        background: var(--sage-50);
+        border-radius: var(--r-lg);
+        padding: 16px;
+        border: 1px dashed var(--sage-200);
+      }
+      .ls-dual-entry .kicker {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        color: var(--sage-700);
+        text-transform: uppercase;
+        margin-bottom: 12px;
+      }
+      .ls-dual-entry .entry-row {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 10px 0;
+      }
+      .ls-dual-entry .entry-row + .entry-row {
+        border-top: 1px dashed var(--sage-200);
+      }
+      .ls-dual-entry .entry-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: var(--r-sm);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .ls-dual-entry .entry-icon.sage {
+        background: var(--sage-100);
+        color: var(--sage-700);
+      }
+      .ls-dual-entry .entry-icon.peach {
+        background: var(--peach-bg);
+        color: var(--peach);
+      }
+      .ls-dual-entry .entry-body {
+        flex: 1;
+      }
+      .ls-dual-entry .entry-way {
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        color: var(--sage-700);
+        text-transform: uppercase;
+      }
+      .ls-dual-entry .entry-title {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-top: 2px;
+        line-height: 1.45;
+      }
+      .ls-dual-entry .help-btn {
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        background: var(--surface-raised);
+        border: 1px solid var(--border-soft);
+        color: var(--sage-700);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        align-self: center;
+        font-size: 13px;
+        font-weight: 900;
+        cursor: pointer;
+      }
+
+      .ls-section-card {
+        background: var(--surface-raised);
+        border-radius: var(--r-lg);
+        box-shadow: var(--shadow-sm);
+        padding: 4px 14px;
+      }
+      .ls-section-card .section-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 14px 4px 10px;
+        border-bottom: 1px solid var(--border-soft);
+      }
+      .ls-section-card .section-head .title {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--text-primary);
+      }
+      .ls-section-card .section-head .action {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--sage-700);
+      }
+      .ls-section-card .group-head {
+        padding: 14px 4px 6px;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.16em;
+        color: var(--sage-700);
+        text-transform: uppercase;
+      }
+
+      .ls-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 4px;
+        border-top: 1px dashed var(--border-soft);
+        cursor: pointer;
+      }
+      .ls-row:first-child {
+        border-top: none;
+      }
+      .ls-row .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+      .ls-row.safe .dot {
+        background: var(--sage-500);
+      }
+      .ls-row.warning .dot {
+        background: var(--amber);
+      }
+      .ls-row.danger .dot {
+        background: var(--danger);
+      }
+
+      .ls-row .host {
+        flex: 1;
+        min-width: 0;
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--text-primary);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .ls-row .tag {
+        font-size: 11px;
+        font-weight: 700;
+        padding: 3px 9px;
+        border-radius: var(--r-pill);
+        letter-spacing: 0.02em;
+        flex-shrink: 0;
+      }
+      .ls-row.safe .tag {
+        background: var(--sage-50);
+        color: var(--sage-700);
+      }
+      .ls-row.warning .tag {
+        background: var(--amber-bg);
+        color: var(--amber);
+      }
+      .ls-row.danger .tag {
+        background: var(--danger-bg);
+        color: var(--danger);
+      }
+
+      .ls-row .time {
+        font-size: 12px;
+        color: var(--text-tertiary);
+        flex-shrink: 0;
+        min-width: 56px;
+        text-align: right;
+      }
+      .ls-row .chevron {
+        color: var(--text-tertiary);
+        font-size: 18px;
+        line-height: 1;
+        margin-left: 2px;
+        flex-shrink: 0;
+      }
+
+      /* RESULT HEADER */
+      .ls-result-header {
+        padding: 56px 20px 72px;
+        border-radius: 0 0 32px 32px;
+        color: white;
+        text-align: center;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+      }
+      .ls-result-header.danger {
+        background: var(--danger);
+      }
+      .ls-result-header.warning {
+        background: var(--amber);
+      }
+      .ls-result-header.safe {
+        background: var(--sage-500);
+      }
+
+      .ls-result-header .nav-row {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+      }
+      .ls-result-header .nav-btn {
+        width: 40px;
+        height: 40px;
+        background: rgba(255, 255, 255, 0.18);
+        border: none;
+        border-radius: var(--r-pill);
+        color: white;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .ls-result-header .kicker-line {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.18em;
+        color: rgba(255, 255, 255, 0.75);
+        text-transform: uppercase;
+        margin-bottom: 2px;
+      }
+      .ls-result-header .emoji {
+        font-size: 52px;
+        line-height: 1;
+        margin-top: 2px;
+      }
+      .ls-result-header .title {
+        font-size: 28px;
+        font-weight: 900;
+        letter-spacing: -0.01em;
+        color: white;
+      }
+      .ls-result-header .sub {
+        font-size: 15px;
+        font-weight: 500;
+        color: rgba(255, 255, 255, 0.9);
+        max-width: 280px;
+      }
+
+      .ls-score-badge {
+        position: relative;
+        margin: -32px auto 0;
+        background: white;
+        border-radius: var(--r-pill);
+        padding: 12px 26px;
+        display: inline-flex;
+        align-items: baseline;
+        gap: 8px;
+        box-shadow:
+          0 6px 20px rgba(74, 64, 48, 0.14),
+          0 0 0 5px rgba(255, 255, 255, 1);
+        z-index: 5;
+      }
+      .ls-score-badge .num {
+        font-size: 36px;
+        font-weight: 900;
+        letter-spacing: -0.03em;
+        line-height: 1;
+      }
+      .ls-score-badge.danger .num {
+        color: var(--score-danger);
+      }
+      .ls-score-badge.warning .num {
+        color: var(--score-warning);
+      }
+      .ls-score-badge.safe .num {
+        color: var(--score-safe);
+      }
+      .ls-score-badge .label {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--text-tertiary);
+        letter-spacing: 0.06em;
+      }
+
+      /* URL 雙欄位（v6：kicker + URL 置中 · 間距收緊） */
+      .ls-url-dual {
+        padding: 2px 16px 6px;
+      }
+      .ls-url-dual .url-row {
+        padding: 6px 0;
+      }
+      .ls-url-dual .url-row .kicker {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        color: var(--text-tertiary);
+        text-transform: uppercase;
+        margin-bottom: 4px;
+      }
+      .ls-url-dual .url-row.short .kicker {
+        color: var(--sky);
+      }
+      .ls-url-dual .url-row.real.danger .kicker {
+        color: var(--danger);
+      }
+      .ls-url-dual .url-row.real.warning .kicker {
+        color: var(--amber);
+      }
+      .ls-url-dual .url-row.real.safe .kicker {
+        color: var(--sage-700);
+      }
+      .ls-url-dual .url-row .url {
+        font-family: var(--font-mono);
+        font-size: 15px;
+        color: var(--text-primary);
+        word-break: break-all;
+        line-height: 1.5;
+        font-weight: 500;
+        text-align: center;
+      }
+      .ls-url-dual .url-arrow-mini {
+        display: flex;
+        justify-content: center;
+        padding: 0;
+      }
+      .ls-url-dual .url-arrow-mini .arrow-chip {
+        width: 28px;
+        height: 28px;
+        background: var(--sage-50);
+        color: var(--sage-700);
+        border-radius: var(--r-pill);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 1px 2px rgba(74, 64, 48, 0.06);
+      }
+
+      /* 置中看板式區塊標籤 */
+      .ls-section-inline {
+        padding: 6px 16px;
+      }
+      .ls-section-inline .head {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0;
+        padding: 22px 0 14px;
+      }
+      .ls-section-inline.no-top-border .head {
+        padding-top: 14px;
+      }
+      .ls-section-inline .head .head-line {
+        flex: 0 0 32px;
+        height: 0;
+        border-top: 1px dashed var(--sage-200);
+      }
+      .ls-section-inline .head .head-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--sage-50);
+        color: var(--sage-900);
+        border-radius: var(--r-pill);
+        padding: 7px 16px;
+        font-size: 14px;
+        font-weight: 700;
+        letter-spacing: 0;
+        text-transform: none;
+        box-shadow: var(--shadow-pill);
+        margin: 0 10px;
+        white-space: nowrap;
+      }
+      .ls-section-inline .head .head-pill .badge-ai {
+        font-size: 11px;
+        font-weight: 700;
+        background: var(--sage-500); /* fallback */
+        color: white;
+        padding: 2px 9px;
+        border-radius: var(--r-pill);
+        letter-spacing: 0.04em;
+        text-transform: none;
+        margin-left: 2px;
+      }
+      /* AI provider official colors */
+      .ls-section-inline .head .head-pill .badge-ai.claude {
+        background: #d97757;
+      } /* Anthropic coral */
+      .ls-section-inline .head .head-pill .badge-ai.gpt {
+        background: #10a37f;
+      } /* OpenAI green */
+      .ls-section-inline .head .head-pill .badge-ai.gemini {
+        background: #1a73e8;
+      } /* Google blue */
+      .ls-section-inline .head .head-pill .badge-ai.llama {
+        background: #0866ff;
+      } /* Meta blue */
+      .ls-section-inline .body-text {
+        font-size: 15px;
+        color: var(--text-primary);
+        line-height: 1.75;
+        padding-bottom: 6px;
+      }
+
+      /* PIPELINE */
+      .ls-pipeline-flow {
+        padding: 4px 0 8px;
+      }
+      .ls-pipeline-flow .step {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 0;
+      }
+      .ls-pipeline-flow .step .step-num {
+        width: 28px;
+        height: 28px;
+        border-radius: var(--r-pill);
+        background: var(--sage-50);
+        color: var(--sage-700);
+        font-size: 12px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        font-family: var(--font-mono);
+      }
+      .ls-pipeline-flow .step.fail .step-num {
+        background: var(--danger-bg);
+        color: var(--danger);
+      }
+      .ls-pipeline-flow .step.warn .step-num {
+        background: var(--amber-bg);
+        color: var(--amber);
+      }
+      .ls-pipeline-flow .step.running .step-num {
+        background: var(--sky-bg);
+        color: var(--sky);
+      }
+      .ls-pipeline-flow .step.pending .step-num {
+        background: var(--surface);
+        color: var(--text-tertiary);
+      }
+      .ls-pipeline-flow .step .content {
+        flex: 1;
+      }
+      .ls-pipeline-flow .step .label {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--text-primary);
+      }
+      .ls-pipeline-flow .step.pending .label {
+        color: var(--text-tertiary);
+      }
+      .ls-pipeline-flow .step .sub {
+        font-size: 13px;
+        color: var(--text-tertiary);
+        font-weight: 400;
+        margin-top: 2px;
+      }
+      .ls-pipeline-flow .step .status {
+        padding: 4px 10px;
+        border-radius: var(--r-pill);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        flex-shrink: 0;
+      }
+      .ls-pipeline-flow .step.pass .status {
+        background: var(--sage-50);
+        color: var(--sage-700);
+      }
+      .ls-pipeline-flow .step.fail .status {
+        background: var(--danger-bg);
+        color: var(--danger);
+      }
+      .ls-pipeline-flow .step.warn .status {
+        background: var(--amber-bg);
+        color: var(--amber);
+      }
+      .ls-pipeline-flow .step.running .status {
+        background: var(--sky-bg);
+        color: var(--sky);
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+      }
+      .ls-pipeline-flow .step.running .status::before {
+        content: "";
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--sky);
+        animation: pulse 1.2s ease-in-out infinite;
+      }
+      .ls-pipeline-flow .step.pending .status {
+        background: transparent;
+        color: var(--text-tertiary);
+        border: 1px dashed var(--border-soft);
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+          transform: scale(1);
+        }
+        50% {
+          opacity: 0.4;
+          transform: scale(0.85);
+        }
+      }
+
+      .ls-pipeline-flow .flow-arrow {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        height: 18px;
+        margin-left: 7px;
+        color: var(--sage-700);
+      }
+      .ls-pipeline-flow .flow-arrow svg {
+        display: block;
+        width: 14px;
+        height: 18px;
+      }
+
+      .ls-risk-inline {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 10px 0 10px 12px;
+        border-left: 3px solid var(--danger);
+        margin: 6px 0;
+      }
+      .ls-risk-inline.warning {
+        border-left-color: var(--amber);
+      }
+      .ls-risk-inline.safe {
+        border-left-color: var(--sage-500);
+      }
+      .ls-risk-inline .text {
+        flex: 1;
+        font-size: 15px;
+        color: var(--text-primary);
+        line-height: 1.6;
+      }
+
+      .ls-action-bar {
+        padding: 14px 16px 28px;
+        background: var(--surface-raised);
+        border-top: 1px solid var(--border-soft);
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .btn-primary-danger {
+        height: 56px;
+        border-radius: var(--r-lg);
+        border: none;
+        background: var(--danger);
+        color: white;
+        font-family: inherit;
+        font-size: 17px;
+        font-weight: 700;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+      }
+      .btn-primary-warning {
+        height: 56px;
+        border-radius: var(--r-lg);
+        border: none;
+        background: var(--amber);
+        color: white;
+        font-family: inherit;
+        font-size: 17px;
+        font-weight: 700;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+      }
+      .btn-primary-sage {
+        height: 56px;
+        border-radius: var(--r-lg);
+        border: none;
+        background: var(--sage-500);
+        color: white;
+        font-family: inherit;
+        font-size: 17px;
+        font-weight: 700;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+      }
+      .action-sub-row {
+        display: flex;
+        gap: 8px;
+      }
+      .btn-ghost {
+        flex: 1;
+        height: 44px;
+        border-radius: var(--r-md);
+        border: 1px solid var(--border-soft);
+        background: transparent;
+        color: var(--text-secondary);
+        font-family: inherit;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+      }
+
+      .ls-bottomnav {
+        background: var(--surface-raised);
+        border: 1px solid var(--border-soft);
+        border-radius: var(--r-pill);
+        padding: 6px;
+        display: flex;
+        justify-content: space-around;
+        box-shadow: var(--shadow-md);
+      }
+      .ls-bottomnav .nav-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 10px 18px;
+        border-radius: var(--r-pill);
+        font-size: 13px;
+        color: var(--text-tertiary);
+        font-weight: 600;
+        flex: 1;
+        justify-content: center;
+      }
+      .ls-bottomnav .nav-item.active {
+        background: var(--sage-50);
+        color: var(--sage-700);
+      }
+      .ls-bottomnav .nav-item svg {
+        width: 18px;
+        height: 18px;
+      }
+
+      .snapshot-bar {
+        background: var(--surface);
+        padding: 10px 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12px;
+        color: var(--text-secondary);
+        border-top: 1px solid var(--border-soft);
+      }
+      .snapshot-bar .badge {
+        background: var(--peach-bg);
+        color: var(--peach);
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        padding: 3px 8px;
+        border-radius: var(--r-pill);
+        text-transform: uppercase;
+      }
+      .snapshot-bar .date {
+        margin-left: auto;
+        font-family: var(--font-mono);
+        font-size: 12px;
+        color: var(--text-tertiary);
+      }
+
+      /* ANALYZING — spinner + progress */
+      .ls-analyzing-hero {
+        background: linear-gradient(160deg, var(--sage-500), var(--sage-700));
+        padding: 56px 20px 56px;
+        border-radius: 0 0 32px 32px;
+        color: white;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 14px;
+      }
+      .ls-analyzing-hero .spinner {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        border: 4px solid rgba(255, 255, 255, 0.2);
+        border-top-color: white;
+        animation: spin 1.2s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      .ls-analyzing-hero .kicker-line {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.18em;
+        color: rgba(255, 255, 255, 0.75);
+        text-transform: uppercase;
+      }
+      .ls-analyzing-hero .title {
+        font-size: 26px;
+        font-weight: 900;
+        letter-spacing: -0.01em;
+        color: white;
+      }
+      .ls-analyzing-hero .sub {
+        font-size: 14px;
+        font-weight: 500;
+        color: rgba(255, 255, 255, 0.85);
+        max-width: 280px;
+      }
+
+      .analyzing-target {
+        background: var(--surface-raised);
+        margin: 16px;
+        border-radius: var(--r-md);
+        padding: 14px 16px;
+        box-shadow: var(--shadow-sm);
+        text-align: center;
+      }
+      .analyzing-target .k {
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        color: var(--text-tertiary);
+        text-transform: uppercase;
+        margin-bottom: 4px;
+      }
+      .analyzing-target .u {
+        font-family: var(--font-mono);
+        font-size: 14px;
+        color: var(--text-primary);
+        word-break: break-all;
+      }
+
+      /* ACCOUNT — 訪客權益卡（登入前的主視覺） */
+      .ls-benefit-card {
+        background: var(--sage-50);
+        border-radius: var(--r-lg);
+        padding: 22px 20px 20px;
+        border: 1px solid var(--sage-200);
+        text-align: center;
+      }
+      .ls-benefit-card .emoji-wrap {
+        width: 72px;
+        height: 72px;
+        background: var(--surface-raised);
+        border-radius: 50%;
+        margin: 0 auto 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 34px;
+        box-shadow: var(--shadow-sm);
+      }
+      .ls-benefit-card .headline {
+        font-size: 19px;
+        font-weight: 900;
+        color: var(--text-primary);
+        letter-spacing: -0.01em;
+        line-height: 1.35;
+        margin-bottom: 4px;
+      }
+      .ls-benefit-card .sub {
+        font-size: 13px;
+        color: var(--text-secondary);
+        margin-bottom: 16px;
+        line-height: 1.55;
+      }
+      .ls-benefit-card .benefit-list {
+        text-align: left;
+        border-top: 1px dashed var(--sage-200);
+        padding-top: 6px;
+      }
+      .ls-benefit-card .benefit-row {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 10px 0;
+      }
+      .ls-benefit-card .benefit-row + .benefit-row {
+        border-top: 1px dashed var(--sage-200);
+      }
+      .ls-benefit-card .check-icon {
+        width: 22px;
+        height: 22px;
+        background: var(--sage-100);
+        border-radius: 50%;
+        color: var(--sage-700);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .ls-benefit-card .benefit-text {
+        font-size: 14px;
+        color: var(--text-primary);
+        line-height: 1.55;
+        flex: 1;
+        font-weight: 500;
+      }
+
+      /* ACCOUNT — Profile 卡片（已登入） */
+      .ls-profile-card {
+        background: var(--surface-raised);
+        border-radius: var(--r-lg);
+        padding: 18px 20px;
+        box-shadow: var(--shadow-md);
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+      .ls-profile-card .avatar {
+        width: 56px;
+        height: 56px;
+        background: var(--sage-100);
+        color: var(--sage-700);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        font-weight: 900;
+        flex-shrink: 0;
+        letter-spacing: -0.02em;
+      }
+      .ls-profile-card .info {
+        flex: 1;
+        min-width: 0;
+      }
+      .ls-profile-card .email {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--text-primary);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .ls-profile-card .meta-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 6px;
+      }
+      .ls-profile-card .plan-tag {
+        font-size: 11px;
+        font-weight: 700;
+        background: var(--sage-50);
+        color: var(--sage-700);
+        padding: 3px 10px;
+        border-radius: var(--r-pill);
+        letter-spacing: 0.04em;
+      }
+      .ls-profile-card .verified {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 12px;
+        color: var(--sage-700);
+        font-weight: 600;
+      }
+
+      /* ACCOUNT — 配額卡 */
+      .ls-quota-card {
+        background: var(--surface-raised);
+        border-radius: var(--r-lg);
+        padding: 18px 20px;
+        box-shadow: var(--shadow-md);
+      }
+      .ls-quota-card .head {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        margin-bottom: 10px;
+      }
+      .ls-quota-card .label {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--text-secondary);
+        letter-spacing: 0.02em;
+      }
+      .ls-quota-card .count {
+        font-size: 15px;
+        font-weight: 800;
+        color: var(--text-tertiary);
+        font-family: var(--font-mono);
+      }
+      .ls-quota-card .count .num {
+        color: var(--sage-700);
+        font-size: 17px;
+      }
+      .ls-quota-card .bar {
+        height: 10px;
+        background: var(--sage-50);
+        border-radius: var(--r-pill);
+        overflow: hidden;
+      }
+      .ls-quota-card .bar .fill {
+        height: 100%;
+        background: var(--sage-500);
+        border-radius: var(--r-pill);
+      }
+      .ls-quota-card .reset {
+        font-size: 12px;
+        color: var(--text-tertiary);
+        margin-top: 10px;
+      }
+
+      /* ACCOUNT — 危險區（刪除帳號文字連結） */
+      .ls-danger-link {
+        background: transparent;
+        border: none;
+        color: var(--danger);
+        font-family: inherit;
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: underline;
+        text-underline-offset: 4px;
+        cursor: pointer;
+        padding: 12px 16px;
+        display: block;
+        margin: 0 auto;
+        text-align: center;
+      }
+
+      /* ACCOUNT — full-width ghost button override（btn-ghost 預設 flex:1 需容器） */
+      .btn-ghost.full-width {
+        flex: none;
+        width: 100%;
+        height: 48px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="doc">
+      <section>
+        <div class="meta">
+          LinkSentry AI · Final Design Mockups · 2026-04-20
+        </div>
+        <h1>LinkSentry AI — 設計定案</h1>
+        <p class="lede">
+          Soft Paper Safety
+          設計語言的最終定案版本。以暖米白畫布、鼠尾草綠、塵紅三層配色，
+          搭配「拒絕過多卡片」「中央節奏」「高齡友善字級」三大原則。
+          以下列出所有核心畫面。
+        </p>
+        <div class="toc">
+          <a href="#home">01. Home · 首頁</a>
+          <a href="#analyzing">02. Analyzing · 分析中</a>
+          <a href="#danger">03. Result (Danger) · 詐騙</a>
+          <a href="#warning">04. Result (Warning) · 警戒</a>
+          <a href="#safe">05. Result (Safe) · 安全</a>
+          <a href="#history-list">06. History List · 歷史清單</a>
+          <a href="#history-detail">07. History Detail · 歷史快照</a>
+          <a href="#account">08. Account · 我的</a>
+        </div>
+      </section>
+
+      <!-- ========== 01 HOME + 02 ANALYZING ========== -->
+      <h2 id="home">01 + 02 / Home · Analyzing</h2>
+
+      <div class="grid-phones-2">
+        <!-- 01 HOME -->
+        <div id="home-phone">
+          <div class="phone">
+            <div class="phone-inner">
+              <div class="ls-topbar-flat">
+                <div class="app-icon">
+                  <svg
+                    width="22"
+                    height="22"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                    <path d="M9 12l2 2 4-4" />
+                  </svg>
+                </div>
+                <div class="app-meta">
+                  <div class="app-kicker">LinkSentry</div>
+                  <div class="app-title">哈囉，阿嬤</div>
+                </div>
+                <button class="action-btn" aria-label="隱私權">
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                    <path d="m9 12 2 2 4-4" />
+                  </svg>
+                </button>
+              </div>
+              <div class="screen-gap"></div>
+              <div class="ls-hero">
+                <div class="kicker">本週防護</div>
+                <div class="headline">已幫你檢查 12 個連結</div>
+                <div class="desc">
+                  其中 2 個被攔下。繼續把可疑連結丟給我看。
+                </div>
+                <div class="stat-row">
+                  <div class="stat-chip">
+                    <div class="num">12</div>
+                    <div class="l">已檢查</div>
+                  </div>
+                  <div class="stat-chip peach">
+                    <div class="num">2</div>
+                    <div class="l">攔截風險</div>
+                  </div>
+                </div>
+              </div>
+              <div class="screen-gap"></div>
+              <button class="ls-cta">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
+                  <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
+                  <path d="m9 14 2 2 4-4" />
+                </svg>
+                貼上連結開始分析
+              </button>
+              <div class="screen-gap"></div>
+              <div class="ls-dual-entry">
+                <div class="kicker">兩種分析方式</div>
+                <div class="entry-row">
+                  <div class="entry-icon sage">
+                    <svg
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2.2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <rect x="9" y="2" width="6" height="4" rx="1" />
+                      <path
+                        d="M9 4H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-4"
+                      />
+                    </svg>
+                  </div>
+                  <div class="entry-body">
+                    <div class="entry-way">方法 1 · 在 App 內</div>
+                    <div class="entry-title">貼上連結開始分析</div>
+                  </div>
+                </div>
+                <div class="entry-row">
+                  <div class="entry-icon peach">
+                    <svg
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2.2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <circle cx="18" cy="5" r="3" />
+                      <circle cx="6" cy="12" r="3" />
+                      <circle cx="18" cy="19" r="3" />
+                      <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+                      <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+                    </svg>
+                  </div>
+                  <div class="entry-body">
+                    <div class="entry-way">方法 2 · 從其他 App</div>
+                    <div class="entry-title">用系統「分享」傳連結過來</div>
+                  </div>
+                  <button class="help-btn" title="如何使用「分享」傳連結">?</button>
+                </div>
+              </div>
+              <div class="screen-gap-lg"></div>
+              <div class="ls-bottomnav">
+                <div class="nav-item active">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                    <polyline points="9 22 9 12 15 12 15 22" />
+                  </svg>
+                  首頁
+                </div>
+                <div class="nav-item">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <circle cx="12" cy="12" r="10" />
+                    <polyline points="12 6 12 12 16 14" />
+                  </svg>
+                  歷史
+                </div>
+                <div class="nav-item">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
+                  </svg>
+                  我的
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="phone-caption">
+            <div class="title">Home · 首頁</div>
+            <div class="note-mini">入口：貼上連結 / 系統分享</div>
+          </div>
+        </div>
+
+        <!-- 02 ANALYZING -->
+        <div id="analyzing">
+          <div class="phone edge-to-edge">
+            <div class="ls-analyzing-hero">
+              <div class="spinner"></div>
+              <div class="kicker-line">ANALYZING</div>
+              <div class="title">正在深度分析連結</div>
+              <div class="sub">依序執行 4 項安全檢查，約需 3–5 秒</div>
+            </div>
+
+            <div class="analyzing-target">
+              <div class="k">目標網址</div>
+              <div class="u">https://bit.ly/xYz123Ab</div>
+            </div>
+
+            <!-- head-pill 的「X 項檢查」由實際 step 數決定，下方為 4 步驟樣本 -->
+            <div class="ls-section-inline no-top-border">
+              <div class="head">
+                <span class="head-line"></span>
+                <span class="head-pill">進行中 4 項檢查</span>
+                <span class="head-line"></span>
+              </div>
+              <div class="ls-pipeline-flow">
+                <div class="step pass">
+                  <div class="step-num">01</div>
+                  <div class="content">
+                    <div class="label">短網址解析</div>
+                    <div class="sub">bit.ly → fake-invest.xyz</div>
+                  </div>
+                  <span class="status">完成</span>
+                </div>
+                <div class="flow-arrow" aria-hidden="true">
+                  <svg
+                    viewBox="0 0 14 18"
+                    fill="none"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path
+                      d="M7 1 V11"
+                      stroke="var(--sage-200)"
+                      stroke-width="1.5"
+                      stroke-dasharray="2 2"
+                    />
+                    <path
+                      d="M3 10 L7 14 L11 10"
+                      stroke="var(--sage-700)"
+                      stroke-width="2"
+                    />
+                  </svg>
+                </div>
+                <div class="step running">
+                  <div class="step-num">02</div>
+                  <div class="content">
+                    <div class="label">165 反詐黑名單</div>
+                    <div class="sub">比對本地 + 雲端黑名單...</div>
+                  </div>
+                  <span class="status">進行中</span>
+                </div>
+                <div class="flow-arrow" aria-hidden="true">
+                  <svg
+                    viewBox="0 0 14 18"
+                    fill="none"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path
+                      d="M7 1 V11"
+                      stroke="var(--sage-200)"
+                      stroke-width="1.5"
+                      stroke-dasharray="2 2"
+                    />
+                    <path
+                      d="M3 10 L7 14 L11 10"
+                      stroke="var(--sage-700)"
+                      stroke-width="2"
+                    />
+                  </svg>
+                </div>
+                <div class="step pending">
+                  <div class="step-num">03</div>
+                  <div class="content">
+                    <div class="label">Google Safe Browsing</div>
+                    <div class="sub">等待前一項完成</div>
+                  </div>
+                  <span class="status">等候</span>
+                </div>
+                <div class="flow-arrow" aria-hidden="true">
+                  <svg
+                    viewBox="0 0 14 18"
+                    fill="none"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path
+                      d="M7 1 V11"
+                      stroke="var(--sage-200)"
+                      stroke-width="1.5"
+                      stroke-dasharray="2 2"
+                    />
+                    <path
+                      d="M3 10 L7 14 L11 10"
+                      stroke="var(--sage-700)"
+                      stroke-width="2"
+                    />
+                  </svg>
+                </div>
+                <div class="step pending">
+                  <div class="step-num">04</div>
+                  <div class="content">
+                    <div class="label">AI 深度分析</div>
+                    <div class="sub">等待前一項完成</div>
+                  </div>
+                  <span class="status">等候</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="ls-action-bar">
+              <div class="action-sub-row">
+                <button class="btn-ghost">取消分析</button>
+              </div>
+            </div>
+          </div>
+          <div class="phone-caption">
+            <div class="title">Analyzing · 分析中</div>
+            <div class="note-mini">
+              Loading 狀態：spinner + 即時 pipeline 進度
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========== 03 DANGER + 04 WARNING ========== -->
+      <h2 id="danger">03 + 04 / Result (Danger) · Result (Warning)</h2>
+
+      <div class="grid-phones-2">
+        <!-- 03 RESULT DANGER -->
+        <div>
+          <div class="phone edge-to-edge">
+            <div class="ls-result-header danger">
+              <div class="nav-row">
+                <button class="nav-btn" aria-label="back">
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <polyline points="15 18 9 12 15 6" />
+                  </svg>
+                </button>
+                <div style="display: flex; gap: 8px">
+                  <button class="nav-btn" aria-label="tts">
+                    <svg
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path d="M11 5L6 9H2v6h4l5 4V5z" />
+                      <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+                      <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
+                    </svg>
+                  </button>
+                  <button class="nav-btn" aria-label="share">
+                    <svg
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <circle cx="18" cy="5" r="3" />
+                      <circle cx="6" cy="12" r="3" />
+                      <circle cx="18" cy="19" r="3" />
+                      <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+                      <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              <div class="emoji">🚨</div>
+              <div class="title">這是詐騙連結</div>
+              <div class="sub">已列入 165 反詐平台假投資黑名單</div>
+            </div>
+
+            <div style="text-align: center">
+              <div class="ls-score-badge danger">
+                <span class="num">92</span>
+                <span class="label">/ 100 風險</span>
+              </div>
+            </div>
+
+            <div class="screen-gap"></div>
+
+            <div class="ls-url-dual">
+              <div class="url-row short">
+                <div class="kicker">
+                  <svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path
+                      d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"
+                    />
+                    <path
+                      d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"
+                    />
+                  </svg>
+                  收到的短網址
+                </div>
+                <div class="url">https://bit.ly/xYz123Ab</div>
+              </div>
+              <div class="url-arrow-mini">
+                <span class="arrow-chip">
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <line x1="12" y1="5" x2="12" y2="19" />
+                    <polyline points="5 12 12 19 19 12" />
+                  </svg>
+                </span>
+              </div>
+              <div class="url-row real danger">
+                <div class="kicker">
+                  <svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="12" y1="8" x2="12" y2="12" />
+                    <line x1="12" y1="16" x2="12.01" y2="16" />
+                  </svg>
+                  實際前往網址
+                </div>
+                <div class="url">
+                  https://fake-invest.xyz/login?ref=line&amp;c=tw
+                </div>
+              </div>
+            </div>
+
+            <div class="ls-section-inline">
+              <div class="head">
+                <span class="head-line"></span>
+                <span class="head-pill">
+                  AI 分析摘要
+                  <span class="badge-ai claude">Claude</span>
+                </span>
+                <span class="head-line"></span>
+              </div>
+              <div class="body-text">
+                此網址模仿知名券商域名，夾帶 LINE
+                廣告追蹤參數，與台灣常見假投資詐騙手法高度吻合。建議立即關閉並轉發提醒家人。
+              </div>
+            </div>
+
+            <div class="ls-section-inline">
+              <div class="head">
+                <span class="head-line"></span>
+                <span class="head-pill">已執行 4 項檢查</span>
+                <span class="head-line"></span>
+              </div>
+              <div class="ls-pipeline-flow">
+                <div class="step pass">
+                  <div class="step-num">01</div>
+                  <div class="content">
+                    <div class="label">短網址解析</div>
+                    <div class="sub">bit.ly → fake-invest.xyz</div>
+                  </div>
+                  <span class="status">完成</span>
+                </div>
+                <div class="flow-arrow" aria-hidden="true">
+                  <svg
+                    viewBox="0 0 14 18"
+                    fill="none"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path
+                      d="M7 1 V11"
+                      stroke="var(--sage-200)"
+                      stroke-width="1.5"
+                      stroke-dasharray="2 2"
+                    />
+                    <path
+                      d="M3 10 L7 14 L11 10"
+                      stroke="var(--sage-700)"
+                      stroke-width="2"
+                    />
+                  </svg>
+                </div>
+                <div class="step fail">
+                  <div class="step-num">02</div>
+                  <div class="content">
+                    <div class="label">165 反詐黑名單</div>
+                    <div class="sub">假投資博弈類別命中</div>
+                  </div>
+                  <span class="status">命中</span>
+                </div>
+                <div class="flow-arrow" aria-hidden="true">
+                  <svg
+                    viewBox="0 0 14 18"
+                    fill="none"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path
+                      d="M7 1 V11"
+                      stroke="var(--sage-200)"
+                      stroke-width="1.5"
+                      stroke-dasharray="2 2"
+                    />
+                    <path
+                      d="M3 10 L7 14 L11 10"
+                      stroke="var(--sage-700)"
+                      stroke-width="2"
+                    />
+                  </svg>
+                </div>
+                <div class="step pass">
+                  <div class="step-num">03</div>
+                  <div class="content">
+                    <div class="label">Google Safe Browsing</div>
+                    <div class="sub">尚未被 Google 標記</div>
+                  </div>
+                  <span class="status">通過</span>
+                </div>
+                <div class="flow-arrow" aria-hidden="true">
+                  <svg
+                    viewBox="0 0 14 18"
+                    fill="none"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path
+                      d="M7 1 V11"
+                      stroke="var(--sage-200)"
+                      stroke-width="1.5"
+                      stroke-dasharray="2 2"
+                    />
+                    <path
+                      d="M3 10 L7 14 L11 10"
+                      stroke="var(--sage-700)"
+                      stroke-width="2"
+                    />
+                  </svg>
+                </div>
+                <div class="step fail">
+                  <div class="step-num">04</div>
+                  <div class="content">
+                    <div class="label">AI 深度分析</div>
+                    <div class="sub">頁面偽裝券商登入介面</div>
+                  </div>
+                  <span class="status">命中</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="ls-section-inline">
+              <div class="head">
+                <span class="head-line"></span>
+                <span class="head-pill">風險指標</span>
+                <span class="head-line"></span>
+              </div>
+              <div class="ls-risk-inline">
+                <span class="text"
+                  >域名模仿知名券商，使用
+                  <code
+                    style="
+                      font-family: var(--font-mono);
+                      background: var(--danger-bg);
+                      padding: 0 4px;
+                      border-radius: 4px;
+                      font-size: 13px;
+                    "
+                    >.xyz</code
+                  >
+                  非正式頂級域名</span
+                >
+              </div>
+              <div class="ls-risk-inline">
+                <span class="text"
+                  >網址包含 LINE 廣告追蹤參數，典型社群詐騙散播手法</span
+                >
+              </div>
+              <div class="ls-risk-inline">
+                <span class="text"
+                  >伺服器 IP 位於境外，與聲稱的台灣券商服務不符</span
+                >
+              </div>
+              <div class="screen-gap-sm"></div>
+            </div>
+
+            <div class="ls-action-bar">
+              <button class="btn-primary-danger">
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="4.93" y1="4.93" x2="19.07" y2="19.07" />
+                </svg>
+                不要前往這個網站
+              </button>
+              <div class="action-sub-row">
+                <button class="btn-ghost">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                  </svg>
+                  回報 165
+                </button>
+                <button class="btn-ghost icon-only" aria-label="複製網址">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                  </svg>
+                </button>
+                <button class="btn-ghost icon-only" aria-label="刪除紀錄">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="3 6 5 6 21 6" />
+                    <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                    <path d="M10 11v6M14 11v6" />
+                    <path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="phone-caption">
+            <div class="title">Result (Danger) · 詐騙</div>
+            <div class="note-mini">Score ≥ 70 · 紅色 Hero + 塵紅主 CTA</div>
+            <div class="note-mini">
+              TopBar（返回/分享）凍結不動 · Hero 上滑時直接被 TopBar 覆蓋
+            </div>
+          </div>
+        </div>
+
+        <!-- 04 RESULT WARNING -->
+        <div id="warning">
+          <div class="phone edge-to-edge">
+            <div class="ls-result-header warning">
+              <div class="nav-row">
+                <button class="nav-btn" aria-label="back">
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <polyline points="15 18 9 12 15 6" />
+                  </svg>
+                </button>
+                <div style="display: flex; gap: 8px">
+                  <button class="nav-btn" aria-label="tts">
+                    <svg
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path d="M11 5L6 9H2v6h4l5 4V5z" />
+                      <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+                      <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
+                    </svg>
+                  </button>
+                  <button class="nav-btn" aria-label="share">
+                    <svg
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <circle cx="18" cy="5" r="3" />
+                      <circle cx="6" cy="12" r="3" />
+                      <circle cx="18" cy="19" r="3" />
+                      <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+                      <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              <div class="emoji">⚠️</div>
+              <div class="title">建議先別進入</div>
+              <div class="sub">來源無法驗證，有幾項可疑線索</div>
+            </div>
+
+            <div style="text-align: center">
+              <div class="ls-score-badge warning">
+                <span class="num">55</span>
+                <span class="label">/ 100 風險</span>
+              </div>
+            </div>
+
+            <div class="screen-gap"></div>
+
+            <div class="ls-url-dual">
+              <div class="url-row short">
+                <div class="kicker">
+                  <svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path
+                      d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"
+                    />
+                    <path
+                      d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"
+                    />
+                  </svg>
+                  收到的短網址
+                </div>
+                <div class="url">https://short.link/a7Bc</div>
+              </div>
+              <div class="url-arrow-mini">
+                <span class="arrow-chip">
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <line x1="12" y1="5" x2="12" y2="19" />
+                    <polyline points="5 12 12 19 19 12" />
+                  </svg>
+                </span>
+              </div>
+              <div class="url-row real warning">
+                <div class="kicker">
+                  <svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="12" y1="8" x2="12" y2="12" />
+                    <line x1="12" y1="16" x2="12.01" y2="16" />
+                  </svg>
+                  實際前往網址
+                </div>
+                <div class="url">
+                  https://tw-member-survey.site/form?src=line
+                </div>
+              </div>
+            </div>
+
+            <div class="ls-section-inline">
+              <div class="head">
+                <span class="head-line"></span>
+                <span class="head-pill">
+                  AI 分析摘要
+                  <span class="badge-ai claude">Claude</span>
+                </span>
+                <span class="head-line"></span>
+              </div>
+              <div class="body-text">
+                此網站目前沒有在黑名單中，但使用非常見的
+                <code
+                  style="
+                    font-family: var(--font-mono);
+                    background: var(--amber-bg);
+                    padding: 0 4px;
+                    border-radius: 4px;
+                    font-size: 14px;
+                  "
+                  >.site</code
+                >
+                頂級域名、頁面有要求輸入手機號的問卷，符合「資料釣魚」的常見特徵。建議先不要填寫資料。
+              </div>
+            </div>
+
+            <div class="ls-section-inline">
+              <div class="head">
+                <span class="head-line"></span>
+                <span class="head-pill">已執行 4 項檢查</span>
+                <span class="head-line"></span>
+              </div>
+              <div class="ls-pipeline-flow">
+                <div class="step pass">
+                  <div class="step-num">01</div>
+                  <div class="content">
+                    <div class="label">短網址解析</div>
+                    <div class="sub">short.link → tw-member-survey.site</div>
+                  </div>
+                  <span class="status">完成</span>
+                </div>
+                <div class="flow-arrow" aria-hidden="true">
+                  <svg
+                    viewBox="0 0 14 18"
+                    fill="none"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path
+                      d="M7 1 V11"
+                      stroke="var(--sage-200)"
+                      stroke-width="1.5"
+                      stroke-dasharray="2 2"
+                    />
+                    <path
+                      d="M3 10 L7 14 L11 10"
+                      stroke="var(--sage-700)"
+                      stroke-width="2"
+                    />
+                  </svg>
+                </div>
+                <div class="step pass">
+                  <div class="step-num">02</div>
+                  <div class="content">
+                    <div class="label">165 反詐黑名單</div>
+                    <div class="sub">目前未被列入</div>
+                  </div>
+                  <span class="status">通過</span>
+                </div>
+                <div class="flow-arrow" aria-hidden="true">
+                  <svg
+                    viewBox="0 0 14 18"
+                    fill="none"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path
+                      d="M7 1 V11"
+                      stroke="var(--sage-200)"
+                      stroke-width="1.5"
+                      stroke-dasharray="2 2"
+                    />
+                    <path
+                      d="M3 10 L7 14 L11 10"
+                      stroke="var(--sage-700)"
+                      stroke-width="2"
+                    />
+                  </svg>
+                </div>
+                <div class="step pass">
+                  <div class="step-num">03</div>
+                  <div class="content">
+                    <div class="label">Google Safe Browsing</div>
+                    <div class="sub">尚未被 Google 標記</div>
+                  </div>
+                  <span class="status">通過</span>
+                </div>
+                <div class="flow-arrow" aria-hidden="true">
+                  <svg
+                    viewBox="0 0 14 18"
+                    fill="none"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path
+                      d="M7 1 V11"
+                      stroke="var(--sage-200)"
+                      stroke-width="1.5"
+                      stroke-dasharray="2 2"
+                    />
+                    <path
+                      d="M3 10 L7 14 L11 10"
+                      stroke="var(--sage-700)"
+                      stroke-width="2"
+                    />
+                  </svg>
+                </div>
+                <div class="step warn">
+                  <div class="step-num">04</div>
+                  <div class="content">
+                    <div class="label">AI 深度分析</div>
+                    <div class="sub">索取手機號碼的問卷型頁面</div>
+                  </div>
+                  <span class="status">可疑</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="ls-section-inline">
+              <div class="head">
+                <span class="head-line"></span>
+                <span class="head-pill">風險指標</span>
+                <span class="head-line"></span>
+              </div>
+              <div class="ls-risk-inline warning">
+                <span class="text"
+                  >頂級域名為
+                  <code
+                    style="
+                      font-family: var(--font-mono);
+                      background: var(--amber-bg);
+                      padding: 0 4px;
+                      border-radius: 4px;
+                      font-size: 13px;
+                    "
+                    >.site</code
+                  >，近三個月才註冊</span
+                >
+              </div>
+              <div class="ls-risk-inline warning">
+                <span class="text">頁面要求填寫手機號碼與身分證末 4 碼</span>
+              </div>
+              <div class="screen-gap-sm"></div>
+            </div>
+
+            <div class="ls-action-bar">
+              <button class="btn-primary-warning">
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <polyline points="15 18 9 12 15 6" />
+                </svg>
+                先不要進入
+              </button>
+              <div class="action-sub-row">
+                <button class="btn-ghost">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                  </svg>
+                  回報 165
+                </button>
+                <button class="btn-ghost icon-only" aria-label="複製網址">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                  </svg>
+                </button>
+                <button class="btn-ghost icon-only" aria-label="刪除紀錄">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="3 6 5 6 21 6" />
+                    <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                    <path d="M10 11v6M14 11v6" />
+                    <path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="phone-caption">
+            <div class="title">Result (Warning) · 警戒</div>
+            <div class="note-mini">
+              Score 40–69 · 琥珀 Hero + 二次確認才可前往
+            </div>
+            <div class="note-mini">
+              TopBar（返回/分享）凍結不動 · Hero 上滑時直接被 TopBar 覆蓋
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========== 05 SAFE + 06 HISTORY LIST ========== -->
+      <h2 id="safe">05 + 06 / Result (Safe) · History List</h2>
+
+      <div class="grid-phones-2">
+        <!-- 05 RESULT SAFE -->
+        <div>
+          <div class="phone edge-to-edge">
+            <div class="ls-result-header safe">
+              <div class="nav-row">
+                <button class="nav-btn" aria-label="back">
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <polyline points="15 18 9 12 15 6" />
+                  </svg>
+                </button>
+                <div style="display: flex; gap: 8px">
+                  <button class="nav-btn" aria-label="tts">
+                    <svg
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path d="M11 5L6 9H2v6h4l5 4V5z" />
+                      <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+                      <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
+                    </svg>
+                  </button>
+                  <button class="nav-btn" aria-label="share">
+                    <svg
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <circle cx="18" cy="5" r="3" />
+                      <circle cx="6" cy="12" r="3" />
+                      <circle cx="18" cy="19" r="3" />
+                      <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+                      <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              <div class="emoji">✅</div>
+              <div class="title">這個連結看起來安全</div>
+              <div class="sub">已驗證域名，沒有發現可疑特徵</div>
+            </div>
+
+            <div style="text-align: center">
+              <div class="ls-score-badge safe">
+                <span class="num">8</span>
+                <span class="label">/ 100 風險</span>
+              </div>
+            </div>
+
+            <div class="screen-gap"></div>
+
+            <div class="ls-url-dual">
+              <div class="url-row short">
+                <div class="kicker">
+                  <svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path
+                      d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"
+                    />
+                    <path
+                      d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"
+                    />
+                  </svg>
+                  收到的網址
+                </div>
+                <div class="url">https://www.pubu.com.tw/ebook/123456</div>
+              </div>
+              <div class="url-arrow-mini">
+                <span class="arrow-chip">
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <line x1="12" y1="5" x2="12" y2="19" />
+                    <polyline points="5 12 12 19 19 12" />
+                  </svg>
+                </span>
+              </div>
+              <div class="url-row real safe">
+                <div class="kicker">
+                  <svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                    <polyline points="22 4 12 14.01 9 11.01" />
+                  </svg>
+                  實際前往網址
+                </div>
+                <div class="url">https://www.pubu.com.tw/ebook/123456</div>
+              </div>
+            </div>
+
+            <div class="ls-section-inline">
+              <div class="head">
+                <span class="head-line"></span>
+                <span class="head-pill">
+                  AI 分析摘要
+                  <span class="badge-ai claude">Claude</span>
+                </span>
+                <span class="head-line"></span>
+              </div>
+              <div class="body-text">
+                這是台灣知名的電子書平台
+                Pubu，域名已使用超過十年，無任何黑名單紀錄。連結指向一本書的詳細頁面，可安心前往。
+              </div>
+            </div>
+
+            <div class="ls-section-inline">
+              <div class="head">
+                <span class="head-line"></span>
+                <span class="head-pill">已執行 4 項檢查</span>
+                <span class="head-line"></span>
+              </div>
+              <div class="ls-pipeline-flow">
+                <div class="step pass">
+                  <div class="step-num">01</div>
+                  <div class="content">
+                    <div class="label">短網址解析</div>
+                    <div class="sub">未偵測到轉址</div>
+                  </div>
+                  <span class="status">通過</span>
+                </div>
+                <div class="flow-arrow" aria-hidden="true">
+                  <svg
+                    viewBox="0 0 14 18"
+                    fill="none"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path
+                      d="M7 1 V11"
+                      stroke="var(--sage-200)"
+                      stroke-width="1.5"
+                      stroke-dasharray="2 2"
+                    />
+                    <path
+                      d="M3 10 L7 14 L11 10"
+                      stroke="var(--sage-700)"
+                      stroke-width="2"
+                    />
+                  </svg>
+                </div>
+                <div class="step pass">
+                  <div class="step-num">02</div>
+                  <div class="content">
+                    <div class="label">165 反詐黑名單</div>
+                    <div class="sub">未被列入</div>
+                  </div>
+                  <span class="status">通過</span>
+                </div>
+                <div class="flow-arrow" aria-hidden="true">
+                  <svg
+                    viewBox="0 0 14 18"
+                    fill="none"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path
+                      d="M7 1 V11"
+                      stroke="var(--sage-200)"
+                      stroke-width="1.5"
+                      stroke-dasharray="2 2"
+                    />
+                    <path
+                      d="M3 10 L7 14 L11 10"
+                      stroke="var(--sage-700)"
+                      stroke-width="2"
+                    />
+                  </svg>
+                </div>
+                <div class="step pass">
+                  <div class="step-num">03</div>
+                  <div class="content">
+                    <div class="label">Google Safe Browsing</div>
+                    <div class="sub">信譽良好</div>
+                  </div>
+                  <span class="status">通過</span>
+                </div>
+                <div class="flow-arrow" aria-hidden="true">
+                  <svg
+                    viewBox="0 0 14 18"
+                    fill="none"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path
+                      d="M7 1 V11"
+                      stroke="var(--sage-200)"
+                      stroke-width="1.5"
+                      stroke-dasharray="2 2"
+                    />
+                    <path
+                      d="M3 10 L7 14 L11 10"
+                      stroke="var(--sage-700)"
+                      stroke-width="2"
+                    />
+                  </svg>
+                </div>
+                <div class="step pass">
+                  <div class="step-num">04</div>
+                  <div class="content">
+                    <div class="label">AI 深度分析</div>
+                    <div class="sub">頁面結構符合正規書店</div>
+                  </div>
+                  <span class="status">通過</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="ls-section-inline">
+              <div class="head">
+                <span class="head-line"></span>
+                <span class="head-pill">信任來源</span>
+                <span class="head-line"></span>
+              </div>
+              <div class="ls-risk-inline safe">
+                <span class="text"
+                  >域名
+                  <code
+                    style="
+                      font-family: var(--font-mono);
+                      background: var(--sage-50);
+                      padding: 0 4px;
+                      border-radius: 4px;
+                      font-size: 13px;
+                    "
+                    >pubu.com.tw</code
+                  >
+                  自 2011 年註冊至今</span
+                >
+              </div>
+              <div class="ls-risk-inline safe">
+                <span class="text"
+                  >HTTPS 憑證由 DigiCert 簽發，伺服器位於台灣</span
+                >
+              </div>
+              <div class="screen-gap-sm"></div>
+            </div>
+
+            <div class="ls-action-bar">
+              <button class="btn-primary-sage">
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path
+                    d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"
+                  />
+                  <polyline points="15 3 21 3 21 9" />
+                  <line x1="10" y1="14" x2="21" y2="3" />
+                </svg>
+                前往這個連結
+              </button>
+              <div class="action-sub-row">
+                <button class="btn-ghost">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                  </svg>
+                  回報 165
+                </button>
+                <button class="btn-ghost icon-only" aria-label="複製網址">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                  </svg>
+                </button>
+                <button class="btn-ghost icon-only" aria-label="刪除紀錄">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="3 6 5 6 21 6" />
+                    <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                    <path d="M10 11v6M14 11v6" />
+                    <path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="phone-caption">
+            <div class="title">Result (Safe) · 安全</div>
+            <div class="note-mini">
+              Score &lt; 40 · 鼠尾草 Hero + 主 CTA 允許前往
+            </div>
+            <div class="note-mini">
+              TopBar（返回/分享）凍結不動 · Hero 上滑時直接被 TopBar 覆蓋
+            </div>
+          </div>
+        </div>
+
+        <!-- 06 HISTORY LIST -->
+        <div id="history-list">
+          <div class="phone">
+            <div class="phone-inner">
+              <div class="ls-topbar-flat">
+                <div class="app-icon">
+                  <svg
+                    width="22"
+                    height="22"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <polyline points="3 3 3 9 9 9" />
+                    <path d="M3.05 13A9 9 0 1 0 6 5.3L3 8" />
+                    <polyline points="12 7 12 12 15 15" />
+                  </svg>
+                </div>
+                <div class="app-meta">
+                  <div class="app-kicker">查詢歷史</div>
+                  <div class="app-title">共 12 筆</div>
+                </div>
+                <button class="action-btn" aria-label="篩選">
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <polygon
+                      points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"
+                    />
+                  </svg>
+                </button>
+                <button class="action-btn" aria-label="清除全部">
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <polyline points="3 6 5 6 21 6" />
+                    <path
+                      d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"
+                    />
+                    <line x1="10" y1="11" x2="10" y2="17" />
+                    <line x1="14" y1="11" x2="14" y2="17" />
+                    <line x1="9" y1="3" x2="15" y2="3" />
+                  </svg>
+                </button>
+              </div>
+              <div class="screen-gap"></div>
+              <div class="ls-section-card">
+                <div class="group-head">今天</div>
+                <div class="ls-row safe">
+                  <span class="dot"></span><span class="host">pubu.com.tw</span
+                  ><span class="tag">安全</span><span class="time">09:38</span
+                  ><span class="chevron">›</span>
+                </div>
+                <div class="ls-row warning">
+                  <span class="dot"></span><span class="host">short.link</span
+                  ><span class="tag">可疑</span><span class="time">09:29</span
+                  ><span class="chevron">›</span>
+                </div>
+                <div class="ls-row danger">
+                  <span class="dot"></span
+                  ><span class="host">fake-invest.xyz</span
+                  ><span class="tag">詐騙</span><span class="time">08:41</span
+                  ><span class="chevron">›</span>
+                </div>
+                <div class="ls-row safe">
+                  <span class="dot"></span><span class="host">ntpc.gov.tw</span
+                  ><span class="tag">安全</span><span class="time">08:12</span
+                  ><span class="chevron">›</span>
+                </div>
+                <div class="group-head">昨天</div>
+                <div class="ls-row danger">
+                  <span class="dot"></span
+                  ><span class="host">chase-tw-verify.xyz</span
+                  ><span class="tag">詐騙</span
+                  ><span class="time">昨 18:20</span
+                  ><span class="chevron">›</span>
+                </div>
+                <div class="ls-row safe">
+                  <span class="dot"></span><span class="host">google.com</span
+                  ><span class="tag">安全</span
+                  ><span class="time">昨 15:03</span
+                  ><span class="chevron">›</span>
+                </div>
+                <div class="ls-row warning">
+                  <span class="dot"></span><span class="host">bit.ly</span
+                  ><span class="tag">可疑</span
+                  ><span class="time">昨 11:47</span
+                  ><span class="chevron">›</span>
+                </div>
+                <div class="group-head">本週稍早</div>
+                <div class="ls-row safe">
+                  <span class="dot"></span><span class="host">shopee.tw</span
+                  ><span class="tag">安全</span><span class="time">週一</span
+                  ><span class="chevron">›</span>
+                </div>
+                <div class="ls-row danger">
+                  <span class="dot"></span
+                  ><span class="host">line-coins-claim.top</span
+                  ><span class="tag">詐騙</span><span class="time">週日</span
+                  ><span class="chevron">›</span>
+                </div>
+                <div class="ls-row safe">
+                  <span class="dot"></span><span class="host">udn.com</span
+                  ><span class="tag">安全</span><span class="time">週日</span
+                  ><span class="chevron">›</span>
+                </div>
+              </div>
+              <div class="screen-gap-lg"></div>
+              <div class="ls-bottomnav">
+                <div class="nav-item">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                    <polyline points="9 22 9 12 15 12 15 22" />
+                  </svg>
+                  首頁
+                </div>
+                <div class="nav-item active">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <circle cx="12" cy="12" r="10" />
+                    <polyline points="12 6 12 12 16 14" />
+                  </svg>
+                  歷史
+                </div>
+                <div class="nav-item">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
+                  </svg>
+                  我的
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="phone-caption">
+            <div class="title">History List · 歷史清單</div>
+            <div class="note-mini">一張卡片包所有紀錄 · 依日期分組</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========== 07 HISTORY DETAIL ========== -->
+      <h2 id="history-detail">07 / History Detail · 歷史快照</h2>
+
+      <div class="grid-phones-2">
+        <div>
+          <div class="phone edge-to-edge">
+            <div class="ls-result-header danger">
+              <div class="nav-row">
+                <button class="nav-btn" aria-label="back">
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <polyline points="15 18 9 12 15 6" />
+                  </svg>
+                </button>
+                <div style="display: flex; gap: 8px">
+                  <button class="nav-btn" aria-label="tts">
+                    <svg
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path d="M11 5L6 9H2v6h4l5 4V5z" />
+                      <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+                      <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
+                    </svg>
+                  </button>
+                  <button class="nav-btn" aria-label="share">
+                    <svg
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <circle cx="18" cy="5" r="3" />
+                      <circle cx="6" cy="12" r="3" />
+                      <circle cx="18" cy="19" r="3" />
+                      <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+                      <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              <div class="kicker-line">歷史快照</div>
+              <div class="emoji">🚨</div>
+              <div class="title">當時判定為詐騙</div>
+              <div class="sub">已列入 165 反詐平台假投資黑名單</div>
+            </div>
+
+            <div style="text-align: center">
+              <div class="ls-score-badge danger">
+                <span class="num">92</span>
+                <span class="label">/ 100 風險</span>
+              </div>
+            </div>
+
+            <div class="ls-url-dual">
+              <div class="url-row short">
+                <div class="kicker">
+                  <svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path
+                      d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"
+                    />
+                    <path
+                      d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"
+                    />
+                  </svg>
+                  收到的短網址
+                </div>
+                <div class="url">https://bit.ly/xYz123Ab</div>
+              </div>
+              <div class="url-arrow-mini">
+                <span class="arrow-chip">
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <line x1="12" y1="5" x2="12" y2="19" />
+                    <polyline points="5 12 12 19 19 12" />
+                  </svg>
+                </span>
+              </div>
+              <div class="url-row real danger">
+                <div class="kicker">
+                  <svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="12" y1="8" x2="12" y2="12" />
+                  </svg>
+                  實際前往網址
+                </div>
+                <div class="url">https://fake-invest.xyz/login?ref=line</div>
+              </div>
+            </div>
+
+            <div class="ls-section-inline">
+              <div class="head">
+                <span class="head-line"></span>
+                <span class="head-pill">
+                  AI 分析摘要
+                  <span class="badge-ai claude">Claude</span>
+                </span>
+                <span class="head-line"></span>
+              </div>
+              <div class="body-text">
+                此網址模仿知名券商域名，夾帶 LINE
+                廣告追蹤參數，與台灣常見假投資詐騙手法高度吻合。
+              </div>
+            </div>
+
+            <div class="ls-section-inline">
+              <div class="head">
+                <span class="head-line"></span>
+                <span class="head-pill">當時執行的 4 項檢查</span>
+                <span class="head-line"></span>
+              </div>
+              <div class="ls-pipeline-flow">
+                <div class="step pass">
+                  <div class="step-num">01</div>
+                  <div class="content">
+                    <div class="label">短網址解析</div>
+                    <div class="sub">bit.ly → fake-invest.xyz</div>
+                  </div>
+                  <span class="status">完成</span>
+                </div>
+                <div class="flow-arrow" aria-hidden="true">
+                  <svg
+                    viewBox="0 0 14 18"
+                    fill="none"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path
+                      d="M7 1 V11"
+                      stroke="var(--sage-200)"
+                      stroke-width="1.5"
+                      stroke-dasharray="2 2"
+                    />
+                    <path
+                      d="M3 10 L7 14 L11 10"
+                      stroke="var(--sage-700)"
+                      stroke-width="2"
+                    />
+                  </svg>
+                </div>
+                <div class="step fail">
+                  <div class="step-num">02</div>
+                  <div class="content">
+                    <div class="label">165 反詐黑名單</div>
+                    <div class="sub">假投資博弈類別</div>
+                  </div>
+                  <span class="status">命中</span>
+                </div>
+                <div class="flow-arrow" aria-hidden="true">
+                  <svg
+                    viewBox="0 0 14 18"
+                    fill="none"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path
+                      d="M7 1 V11"
+                      stroke="var(--sage-200)"
+                      stroke-width="1.5"
+                      stroke-dasharray="2 2"
+                    />
+                    <path
+                      d="M3 10 L7 14 L11 10"
+                      stroke="var(--sage-700)"
+                      stroke-width="2"
+                    />
+                  </svg>
+                </div>
+                <div class="step pass">
+                  <div class="step-num">03</div>
+                  <div class="content">
+                    <div class="label">Google Safe Browsing</div>
+                    <div class="sub">尚未被標記</div>
+                  </div>
+                  <span class="status">通過</span>
+                </div>
+                <div class="flow-arrow" aria-hidden="true">
+                  <svg
+                    viewBox="0 0 14 18"
+                    fill="none"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path
+                      d="M7 1 V11"
+                      stroke="var(--sage-200)"
+                      stroke-width="1.5"
+                      stroke-dasharray="2 2"
+                    />
+                    <path
+                      d="M3 10 L7 14 L11 10"
+                      stroke="var(--sage-700)"
+                      stroke-width="2"
+                    />
+                  </svg>
+                </div>
+                <div class="step fail">
+                  <div class="step-num">04</div>
+                  <div class="content">
+                    <div class="label">AI 深度分析</div>
+                    <div class="sub">偽裝券商登入介面</div>
+                  </div>
+                  <span class="status">命中</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="screen-gap"></div>
+
+            <!-- snapshot-bar 固定貼齊 action-bar 上方（不隨主內容捲動） -->
+            <div class="snapshot-bar">
+              <span class="badge">快照</span>
+              <span>分析於 2026-04-14 09:38</span>
+              <span class="date">6 天前</span>
+            </div>
+
+            <div class="ls-action-bar">
+              <button class="btn-primary-danger">
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="4.93" y1="4.93" x2="19.07" y2="19.07" />
+                </svg>
+                不要前往這個網站
+              </button>
+              <div class="action-sub-row">
+                <button class="btn-ghost">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                  </svg>
+                  回報 165
+                </button>
+                <button class="btn-ghost icon-only" aria-label="複製網址">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                  </svg>
+                </button>
+                <button class="btn-ghost icon-only" aria-label="刪除紀錄">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="3 6 5 6 21 6" />
+                    <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                    <path d="M10 11v6M14 11v6" />
+                    <path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="phone-caption">
+            <div class="title">History Detail · 歷史快照</div>
+            <div class="note-mini">
+              同 Result 版型 · snapshot-bar 貼齊 action-bar 上方（不隨內容捲動）
+            </div>
+            <div class="note-mini">
+              TopBar（返回/分享）凍結不動 · Hero 上滑時直接被 TopBar 覆蓋
+            </div>
+          </div>
+        </div>
+
+        <div
+          style="display: flex; align-items: center; justify-content: center"
+        >
+          <div style="max-width: 340px; text-align: left">
+            <div
+              style="
+                font-size: 14px;
+                font-weight: 700;
+                color: var(--sage-900);
+                margin-bottom: 12px;
+                letter-spacing: 0.12em;
+                text-transform: uppercase;
+              "
+            >
+              關於歷史快照
+            </div>
+            <p
+              style="
+                font-size: 15px;
+                line-height: 1.7;
+                color: var(--text-secondary);
+              "
+            >
+              歷史頁面用與 Result 相同的版型，但加上
+              <strong style="color: var(--peach)">「快照」標籤</strong> 與日期
+              bar。
+            </p>
+            <p
+              style="
+                font-size: 15px;
+                line-height: 1.7;
+                color: var(--text-secondary);
+                margin-top: 12px;
+              "
+            >
+              使用者可選擇
+              <strong style="color: var(--sage-900)">回報 165</strong>（立刻撥打反詐騙專線）、
+              <strong style="color: var(--sage-900)">複製網址</strong>（把連結交給家人判斷）、或
+              <strong style="color: var(--sage-900)">刪除紀錄</strong>（將此筆移出清單）。
+              主按鈕會依當時的風險等級顯示「不要前往／先不要進入／前往這個連結」。
+            </p>
+            <p
+              style="
+                font-size: 13px;
+                line-height: 1.7;
+                color: var(--text-tertiary);
+                margin-top: 16px;
+                border-top: 1px dashed var(--border-soft);
+                padding-top: 12px;
+              "
+            >
+              設計語言詳見
+              <code
+                style="
+                  font-family: var(--font-mono);
+                  background: var(--sage-50);
+                  color: var(--sage-700);
+                  padding: 2px 6px;
+                  border-radius: 4px;
+                "
+                >DESIGN.md</code
+              ><br />
+              使用者流程詳見
+              <code
+                style="
+                  font-family: var(--font-mono);
+                  background: var(--sage-50);
+                  color: var(--sage-700);
+                  padding: 2px 6px;
+                  border-radius: 4px;
+                "
+                >FLOW.md</code
+              >
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========== 08 ACCOUNT ========== -->
+      <h2 id="account">08 / Account · 我的</h2>
+
+      <div class="grid-phones-2">
+        <!-- 08a ACCOUNT · 訪客（未登入） -->
+        <div id="account-visitor">
+          <div class="phone">
+            <div class="phone-inner">
+              <div class="ls-topbar-flat">
+                <div class="app-icon">
+                  <svg
+                    width="22"
+                    height="22"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
+                  </svg>
+                </div>
+                <div class="app-meta">
+                  <div class="app-kicker">LinkSentry</div>
+                  <div class="app-title">訪客模式</div>
+                </div>
+              </div>
+              <div class="screen-gap"></div>
+
+              <div class="ls-benefit-card">
+                <div class="emoji-wrap">
+                  <svg
+                    width="38"
+                    height="38"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="var(--sage-700)"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+                    <path d="M7 11V7a5 5 0 0 1 9.9-1" />
+                  </svg>
+                </div>
+                <div class="headline">登入後，解鎖完整守護</div>
+                <div class="sub">
+                  使用 Google 帳號一鍵登入<br />資料跨裝置即時同步
+                </div>
+                <div class="benefit-list">
+                  <div class="benefit-row">
+                    <div class="check-icon">
+                      <svg
+                        width="12"
+                        height="12"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="3"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                    </div>
+                    <div class="benefit-text">每天免費 10 次 AI 深度分析</div>
+                  </div>
+                  <div class="benefit-row">
+                    <div class="check-icon">
+                      <svg
+                        width="12"
+                        height="12"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="3"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                    </div>
+                    <div class="benefit-text">查詢紀錄跨裝置雲端同步</div>
+                  </div>
+                  <div class="benefit-row">
+                    <div class="check-icon">
+                      <svg
+                        width="12"
+                        height="12"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="3"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                    </div>
+                    <div class="benefit-text">165 黑名單與靜態檢測永久免費</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="screen-gap"></div>
+
+              <button class="ls-cta">
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path
+                    d="M10 17l5-5-5-5v3H3v4h7v3zM19 3h-8v2h8v14h-8v2h8c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"
+                  />
+                </svg>
+                我要登入
+              </button>
+
+              <div class="screen-gap-lg"></div>
+
+              <div class="ls-bottomnav">
+                <div class="nav-item">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                    <polyline points="9 22 9 12 15 12 15 22" />
+                  </svg>
+                  首頁
+                </div>
+                <div class="nav-item">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <circle cx="12" cy="12" r="10" />
+                    <polyline points="12 6 12 12 16 14" />
+                  </svg>
+                  歷史
+                </div>
+                <div class="nav-item active">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
+                  </svg>
+                  我的
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="phone-caption">
+            <div class="title">Account · 訪客（未登入）</div>
+            <div class="note-mini">
+              sage-50 emphasis 卡 · 3 條權益 · 「我要登入」主 CTA
+            </div>
+          </div>
+        </div>
+
+        <!-- 08b ACCOUNT · 已登入 -->
+        <div id="account-member">
+          <div class="phone">
+            <div class="phone-inner">
+              <div class="ls-topbar-flat">
+                <div class="app-icon">
+                  <svg
+                    width="22"
+                    height="22"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
+                  </svg>
+                </div>
+                <div class="app-meta">
+                  <div class="app-kicker">我的</div>
+                  <div class="app-title">帳號</div>
+                </div>
+              </div>
+              <div class="screen-gap"></div>
+
+              <div class="ls-profile-card">
+                <div class="avatar">A</div>
+                <div class="info">
+                  <div class="email">ama1234@gmail.com</div>
+                  <div class="meta-row">
+                    <span class="plan-tag">免費方案</span>
+                    <span class="verified">
+                      <svg
+                        width="12"
+                        height="12"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2.6"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                      已驗證
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="screen-gap"></div>
+
+              <div class="ls-quota-card">
+                <div class="head">
+                  <span class="label">今日 AI 使用量</span>
+                  <span class="count"><span class="num">3</span> / 10 次</span>
+                </div>
+                <div class="bar">
+                  <div class="fill" style="width: 30%"></div>
+                </div>
+                <div class="reset">每日 00:00（台灣時間）重置</div>
+              </div>
+
+              <div class="screen-gap"></div>
+
+              <button class="btn-ghost full-width">
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                  <polyline points="16 17 21 12 16 7" />
+                  <line x1="21" y1="12" x2="9" y2="12" />
+                </svg>
+                登出
+              </button>
+
+              <div class="screen-gap"></div>
+
+              <button class="ls-danger-link">刪除帳號</button>
+
+              <div class="screen-gap-lg"></div>
+
+              <div class="ls-bottomnav">
+                <div class="nav-item">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                    <polyline points="9 22 9 12 15 12 15 22" />
+                  </svg>
+                  首頁
+                </div>
+                <div class="nav-item">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <circle cx="12" cy="12" r="10" />
+                    <polyline points="12 6 12 12 16 14" />
+                  </svg>
+                  歷史
+                </div>
+                <div class="nav-item active">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
+                  </svg>
+                  我的
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="phone-caption">
+            <div class="title">Account · 已登入</div>
+            <div class="note-mini">
+              Profile 卡 · 配額卡（flat sage bar 無漸層/發光）· 登出 ghost ·
+              刪除帳號文字連結
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
